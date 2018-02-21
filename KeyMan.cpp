@@ -15,19 +15,77 @@ const int keyDownLim = (keyLeftAna + keyDownAna) / 2;
 const int keyUpLim = (keyDownAna + keyUpAna) / 2;
 const int keyRightLim = (keyUpAna + keyRightAna) / 2;
 
-
-KeyMan::KeyMan()
+enum keystate_t
 {
-	timeCheckkey.runRepeat(20u);
+	noPress = 0, noRep, rep, specSelect
+};
+
+void KeyMan::repeatCheck()
+{
+	switch (state)
+	{
+	case noPress:
+		if (currkey != keyNull)
+		{
+			switch (currkey)
+			{
+			case keyLeft:
+			case keyRight:
+				keyout = currkey;
+				state = noRep;
+				break;
+			case keyUp:
+			case keyDown:
+				timeRepeat.runOnce(500u);
+				keyout = currkey;
+				state = rep;
+				break;
+			case keySelect:
+				timeRepeat.runOnce(3000u);
+				state = specSelect;
+				break;
+			}
+		}
+		break;
+	case noRep:
+		if (currkey == keyNull)
+		{
+			state = noPress;
+		}
+		break;
+	case rep:
+		if (currkey == keyNull)
+		{
+			state = noPress;
+		}
+		else
+		{
+			if (timeRepeat.timetorun())
+			{
+				timeRepeat.runOnce(200);
+				keyout = currkey;
+			}
+		}
+		break;
+	case specSelect:
+		if (currkey == keyNull)
+		{
+			state = noPress;
+			keyout = keySelect;
+		}
+		else
+		{
+			if (timeRepeat.timetorun())
+			{
+				keyout = keyEscape;
+				state = noRep;
+			}
+		}
+		break;
+	}
 }
 
-
-KeyMan::~KeyMan()
-{
-}
-
-
-void KeyMan::updatekey()
+void KeyMan::analogcheck()
 {
 	if (timeCheckkey.timetorun())
 	{
@@ -46,6 +104,23 @@ void KeyMan::updatekey()
 			else currkey = keyNull;
 
 		}
-		
+
 	}
+}
+
+KeyMan::KeyMan()
+{
+	timeCheckkey.runRepeat(20u);
+}
+
+
+KeyMan::~KeyMan()
+{
+}
+
+
+void KeyMan::updatekey()
+{
+	analogcheck();
+	repeatCheck();
 }

@@ -1,19 +1,26 @@
 #pragma once
 #include "TimeTo.h"
 
-const int keyNull = 0;
-const int keySelect = 1;
-const int keyLeft = 2;
-const int keyDown = 3;
-const int keyUp = 4;
-const int keyRight = 5;
+
+
+enum keycode_t
+{
+	keyNull, keySelect, keyLeft, keyDown, keyUp, keyRight, keyEscape
+};
+
 
 
 class KeyMan
 {
 	int prevkeyana = 1023;
 	unsigned int currkey = 0;
+	unsigned int prevkey = 0;
 	TimeTo timeCheckkey;
+	TimeTo timeRepeat;
+	int state = 0;
+	void repeatCheck();
+	void analogcheck();
+	unsigned int keyout = 0;
 
 public:
 	KeyMan();
