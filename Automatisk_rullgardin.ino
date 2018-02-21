@@ -1,3 +1,8 @@
+#include "KeyMan.h"
+
+KeyMan keyMan;
+
+
 void setup()
 {
 	
@@ -7,7 +12,9 @@ void setup()
 
 void loop()
 {
-
-  /* add main program code here */
-
+	keyMan.updatekey();
+  
+	
+	
+	/* add main program code here */
 }

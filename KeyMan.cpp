@@ -18,6 +18,7 @@ const int keyRightLim = (keyUpAna + keyRightAna) / 2;
 
 KeyMan::KeyMan()
 {
+	timeCheckkey.runRepeat(20u);
 }
 
 
@@ -28,19 +29,23 @@ KeyMan::~KeyMan()
 
 void KeyMan::updatekey()
 {
-	int currkeyana = analogRead(0);
-	int diffkeyana = abs(currkeyana - prevkeyana);
-	prevkeyana = currkeyana;
-	// Check if the analog signal is stable.
-	if (diffkeyana < 5)
+	if (timeCheckkey.timetorun())
 	{
-		// Calculate which key is pressed
-		if (currkeyana < keyRightLim) currkey = keyRight;
-		else if (currkeyana < keyUpLim) currkey = keyUp;
-		else if (currkeyana < keyDownLim) currkey = keyDown;
-		else if (currkeyana < keyLeftLim) currkey = keyLeft;
-		else if (currkeyana < keySelectLim) currkey = keySelect;
-		else currkey = keyNull;
+		int currkeyana = analogRead(0);
+		int diffkeyana = abs(currkeyana - prevkeyana);
+		prevkeyana = currkeyana;
+		// Check if the analog signal is stable.
+		if (diffkeyana < 5)
+		{
+			// Calculate which key is pressed
+			if (currkeyana < keyRightLim) currkey = keyRight;
+			else if (currkeyana < keyUpLim) currkey = keyUp;
+			else if (currkeyana < keyDownLim) currkey = keyDown;
+			else if (currkeyana < keyLeftLim) currkey = keyLeft;
+			else if (currkeyana < keySelectLim) currkey = keySelect;
+			else currkey = keyNull;
 
+		}
+		
 	}
 }

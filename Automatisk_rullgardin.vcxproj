@@ -81,12 +81,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="KeyMan.h" />
-    <ClInclude Include="StateMsk.h" />
+    <ClInclude Include="TimeTo.h" />
     <ClInclude Include="__vm\.Automatisk_rullgardin.vsarduino.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="KeyMan.cpp" />
-    <ClCompile Include="StateMsk.cpp" />
+    <ClCompile Include="TimeTo.cpp" />
   </ItemGroup>
   <PropertyGroup>
     <DebuggerFlavor>VisualMicroDebugger</DebuggerFlavor>
