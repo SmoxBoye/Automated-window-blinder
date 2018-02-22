@@ -20,6 +20,7 @@ enum keystate_t
 	noPress = 0, noRep, rep, specSelect
 };
 
+// A statemachine for translating the button input to useful commands. 
 void KeyMan::repeatCheck()
 {
 	switch (state)
@@ -29,17 +30,20 @@ void KeyMan::repeatCheck()
 		{
 			switch (currkey)
 			{
+			// Output the key input with no repetition.
 			case keyLeft:
 			case keyRight:
 				keyout = currkey;
 				state = noRep;
 				break;
+			// Output the key input with repetition enabled.
 			case keyUp:
 			case keyDown:
 				timeRepeat.runOnce(500u);
 				keyout = currkey;
 				state = rep;
 				break;
+			// Waits for select to release to later determine if it was an Escape or a Select.
 			case keySelect:
 				timeRepeat.runOnce(3000u);
 				state = specSelect;
@@ -47,12 +51,14 @@ void KeyMan::repeatCheck()
 			}
 		}
 		break;
+	// Returns to the default state if the key has been released.
 	case noRep:
 		if (currkey == keyNull)
 		{
 			state = noPress;
 		}
 		break;
+	// Starts to repeat the pressed key if its held and returns to default state when its released.
 	case rep:
 		if (currkey == keyNull)
 		{
@@ -67,6 +73,7 @@ void KeyMan::repeatCheck()
 			}
 		}
 		break;
+	// Does an escape if Select is held longer than 3 seconds, else outputs a normal Select when released. 
 	case specSelect:
 		if (currkey == keyNull)
 		{
@@ -85,6 +92,7 @@ void KeyMan::repeatCheck()
 	}
 }
 
+// Reads the analog signal and translates it into a stable variable. 
 void KeyMan::analogcheck()
 {
 	if (timeCheckkey.timetorun())
@@ -108,6 +116,7 @@ void KeyMan::analogcheck()
 	}
 }
 
+// Sets the refresh rate for the class.
 KeyMan::KeyMan()
 {
 	timeCheckkey.runRepeat(20u);
@@ -118,9 +127,24 @@ KeyMan::~KeyMan()
 {
 }
 
-
+// Checks the analog signal translates it into usable keypresses.
 void KeyMan::updatekey()
 {
 	analogcheck();
 	repeatCheck();
+}
+
+// Outputs the current keypress and resets keyout. 
+int KeyMan::getkey()
+{
+	int holder = keyout;
+	keyout = keyNull;
+
+	return holder;
+}
+
+// Checks if there is any keypress at all.
+bool KeyMan::haskey()
+{
+	return keyout != keyNull;
 }

@@ -26,5 +26,7 @@ public:
 	KeyMan();
 	~KeyMan();
 	void updatekey();
+	int getkey();
+	bool haskey();
 };
 
