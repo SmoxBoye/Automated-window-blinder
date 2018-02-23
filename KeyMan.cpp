@@ -15,6 +15,14 @@ const int keyDownLim = (keyLeftAna + keyDownAna) / 2;
 const int keyUpLim = (keyDownAna + keyUpAna) / 2;
 const int keyRightLim = (keyUpAna + keyRightAna) / 2;
 
+int KeyMan::prevkeyana = 1023;
+unsigned int KeyMan::currkey = 0;
+unsigned int KeyMan::prevkey = 0;
+TimeTo KeyMan::timeCheckkey;
+TimeTo KeyMan::timeRepeat;
+int KeyMan::state = 0;
+unsigned int KeyMan::keyout = 0;
+
 enum keystate_t
 {
 	noPress = 0, noRep, rep, specSelect

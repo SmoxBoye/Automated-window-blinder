@@ -12,21 +12,21 @@ enum keycode_t
 
 class KeyMan
 {
-	int prevkeyana = 1023;
-	unsigned int currkey = 0;
-	unsigned int prevkey = 0;
-	TimeTo timeCheckkey;
-	TimeTo timeRepeat;
-	int state = 0;
-	void repeatCheck();
-	void analogcheck();
-	unsigned int keyout = 0;
+	static int prevkeyana;
+	static unsigned int currkey;
+	static unsigned int prevkey;
+	static TimeTo timeCheckkey;
+	static TimeTo timeRepeat;
+	static int state;
+	static void repeatCheck();
+	static void analogcheck();
+	static unsigned int keyout;
 
 public:
 	KeyMan();
 	~KeyMan();
-	void updatekey();
-	int getkey();
-	bool haskey();
+	static void updatekey();
+	static int getkey();
+	static bool haskey();
 };
 

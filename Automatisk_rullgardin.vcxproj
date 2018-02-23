@@ -81,11 +81,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="KeyMan.h" />
+    <ClInclude Include="Menu.h" />
     <ClInclude Include="TimeTo.h" />
     <ClInclude Include="__vm\.Automatisk_rullgardin.vsarduino.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="KeyMan.cpp" />
+    <ClCompile Include="Menu.cpp" />
     <ClCompile Include="TimeTo.cpp" />
   </ItemGroup>
   <PropertyGroup>
