@@ -1,7 +1,7 @@
 #include "StepContr.h"
 
 
-Stepper stepperM;
+Stepper stepperM(200, 4, 5, 6, 7);
 TimeTo timeUpdate;
 
 
