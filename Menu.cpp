@@ -1,6 +1,10 @@
 #include "Menu.h"
 #include "KeyMan.h"
+#include "StepContr.h"
+
 #include <LiquidCrystal.h>
+
+const int singleStep = 10;
 
 int Menu::prevMenu = 0;
 int Menu::currMenu = 0;
@@ -12,6 +16,7 @@ class MenuDateTime : public Menu
 {
 	virtual void init();
 	virtual void update();
+	virtual void doKey(int key);
 };
 
 class MenuText : public Menu
@@ -22,6 +27,21 @@ class MenuText : public Menu
 	virtual void update();
 public:
 	MenuText(const char* r0, const char* r1);
+};
+
+class MenuAllUpDown : public MenuText
+{
+	virtual void doKey(int key);
+};
+
+class MenuCalibrateMin : public MenuText
+{
+	virtual void doKey(int key);
+};
+
+class MenuCalibrateMax : public MenuText
+{
+	virtual void doKey(int key);
 };
 
 class MenuTime : public Menu
@@ -143,13 +163,38 @@ void MenuDateTime::init()
 	timeUpdate.runRepeat(1000u);
 }
 
+extern int currYear;
+extern int currMonth;
+extern int currDay;
+extern int currHour;
+extern int currMin;
+
 void MenuDateTime::update()
 {
 	lcd.setCursor(0,0);
 	lcd.print("TimeDate");
 	lcd.setCursor(0, 1);
-	lcd.print("2018-02-24 00:12");
+	char row1[17];
+	sprintf(row1, "%04i-%02i-%02i %02i:%02i", currYear, currMonth, currDay, currHour, currMin);
+	lcd.print(row1);
+}
 
+extern StepContr stepContr;
+
+void MenuDateTime::doKey(int key)
+{
+	switch (key)
+	{
+	case keyUp:
+		stepContr.doStepSafe(-singleStep);
+		break;
+	case keyDown:
+		stepContr.doStepSafe(singleStep);
+		break;
+	default:
+		Menu::doKey(key);
+		break;
+	}
 }
 
 void MenuText::init()
@@ -170,7 +215,7 @@ MenuText::MenuText(const char * r0, const char * r1)
 	row1 = r1;
 }
 
-enum menustate_t
+enum menutimestate_t
 {
 	msview = 0, msedithour, mseditmin
 };
@@ -188,7 +233,7 @@ void MenuTime::update()
 	lcd.print(row0);
 	lcd.setCursor(0, 1);
 	char row1[17];
-	sprintf(row1, "%n:%n", hour, min);
+	sprintf(row1, "%02i:%02i", hour, min);
 	lcd.print(row1);
 	// Show cursor
 	switch (menuState)
@@ -207,6 +252,24 @@ void MenuTime::update()
 	}
 }
 
+void keyUpdateVal(int key, int & value, int minValue, int maxValue, int & state, int nextState)
+{
+	switch (key)
+	{
+	case keyUp:
+		value++;
+		if (value > maxValue) value = minValue;
+		break;
+	case keyDown:
+		value--;
+		if (value < 0) value = maxValue;
+		break;
+	case keySelect:
+		state = nextState;
+		break;
+	}
+}
+
 void MenuTime::doKey(int key)
 {
 	int min = (editVal / 60) % 60;
@@ -214,47 +277,23 @@ void MenuTime::doKey(int key)
 	switch (menuState)
 	{
 	case msview:
-		switch (key)
+		if (key == keySelect)
 		{
-		case keySelect:
 			menuState = msedithour;
-			break;
-		default:
+		}
+		else
+		{
 			Menu::doKey(key);
-			break;
 		}
 		break;
 	case msedithour:
-		switch (key)
-		{
-		case keyUp:
-			hour++;
-			if (hour > 23) hour = 0;
-			break;
-		case keyDown:
-			hour--;
-			if (hour < 0) hour = 23;
-			break;
-		case keySelect:
-			menuState = mseditmin;
-			break;
-		}
+		keyUpdateVal(key, hour, 0, 23, menuState, mseditmin);
 		break;
 	case mseditmin:
-		switch (key)
+		keyUpdateVal(key, min, 0, 59, menuState, msview);
+		if (key == keySelect)
 		{
-		case keyUp:
-			min++;
-			if (min > 59) min = 0;
-			break;
-		case keyDown:
-			min--;
-			if (min < 0) min = 59;
-			break;
-		case keySelect:
 			*pTime = (hour * 60 + min) * 60;
-			menuState = msview;
-			break;
 		}
 	}
 	editVal = (hour * 60 + min) * 60;
@@ -266,3 +305,58 @@ MenuTime::MenuTime(const char * r0, int * pt)
 	pTime = pt;
 }
 
+void MenuAllUpDown::doKey(int key)
+{
+	switch (key)
+	{
+	case keyUp:
+		stepContr.doStepAbs(-10);
+		break;
+	case keyDown:
+		stepContr.doStepAbs(10);
+		break;
+	default:
+		Menu::doKey(key);
+		break;
+	}
+}
+
+void MenuCalibrateMin::doKey(int key)
+{
+	switch (key)
+	{
+	case keyUp:
+		stepContr.doStep(-singleStep);
+		break;
+	case keyDown:
+		stepContr.doStep(singleStep);
+		break;
+	case keySelect:
+		stepContr.calibranteMin();
+		Menu::doKey(key);
+		break;
+	default:
+		Menu::doKey(key);
+		break;
+	}
+}
+
+void MenuCalibrateMax::doKey(int key)
+{
+	switch (key)
+	{
+	case keyUp:
+		stepContr.doStep(-singleStep);
+		break;
+	case keyDown:
+		stepContr.doStep(singleStep);
+		break;
+	case keySelect:
+		stepContr.calibranteMax();
+		Menu::doKey(key);
+		break;
+	default:
+		Menu::doKey(key);
+		break;
+	}
+}
