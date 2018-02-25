@@ -5,12 +5,15 @@ class Menu
 {
 	virtual void init();
 	virtual void update();
-	virtual void doKey(int key);
 	static int prevMenu;
 	static int currMenu;
 	
+	
 protected: 
 	static TimeTo timeUpdate;
+	static int menuState;
+	static int editVal;
+	virtual void doKey(int key);
 
 public:
 	Menu();

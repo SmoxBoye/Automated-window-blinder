@@ -24,5 +24,6 @@ public:
 	void runOnce(milli_t time);
 	void runRepeat(milli_t time);
 	bool timetorun();
+	void runStop();
 };
 

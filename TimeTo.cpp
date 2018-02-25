@@ -52,3 +52,8 @@ bool TimeTo::timetorun()
 	
 	
 }
+
+void TimeTo::runStop()
+{
+	waiting = false;
+}
