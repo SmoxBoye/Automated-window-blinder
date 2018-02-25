@@ -1,3 +1,4 @@
+#include <Wire.h>
 #include "KeyMan.h"
 #include <LiquidCrystal.h>
 
