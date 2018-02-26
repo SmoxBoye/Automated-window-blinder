@@ -33,7 +33,7 @@
     <ClInclude Include="StepContr.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\Downloads\RTClib-master\RTClib-master\RTClib.h">
+    <ClInclude Include="RTClib.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -50,7 +50,7 @@
     <ClCompile Include="StepContr.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\Downloads\RTClib-master\RTClib-master\RTClib.cpp">
+    <ClCompile Include="RTClib.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

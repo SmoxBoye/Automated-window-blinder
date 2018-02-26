@@ -80,7 +80,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\Downloads\RTClib-master\RTClib-master\RTClib.h" />
+    <ClInclude Include="RTClib.h" />
     <ClInclude Include="KeyMan.h" />
     <ClInclude Include="Menu.h" />
     <ClInclude Include="StepContr.h" />
@@ -88,7 +88,7 @@
     <ClInclude Include="__vm\.Automatisk_rullgardin.vsarduino.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\Downloads\RTClib-master\RTClib-master\RTClib.cpp" />
+    <ClCompile Include="RTClib.cpp" />
     <ClCompile Include="KeyMan.cpp" />
     <ClCompile Include="Menu.cpp" />
     <ClCompile Include="StepContr.cpp" />
