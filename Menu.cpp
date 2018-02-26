@@ -17,31 +17,47 @@ class MenuDateTime : public Menu
 	virtual void init();
 	virtual void update();
 	virtual void doKey(int key);
+public:
+	MenuDateTime(const char * r0);
+};
+
+class MenuDTEditT : public Menu
+{
+	virtual void init();
+	virtual void update();
+	virtual void doKey(int key);
+public:
+	MenuDTEditT(const char * r0);
 };
 
 class MenuText : public Menu
 {
-	const char* row0;
-	const char* row1;
+	const char * row1;
 	virtual void init();
 	virtual void update();
 public:
-	MenuText(const char* r0, const char* r1);
+	MenuText(const char * r0, const char * r1);
 };
 
 class MenuAllUpDown : public MenuText
 {
 	virtual void doKey(int key);
+public:
+	MenuAllUpDown(const char * r0, const char * r1);
 };
 
 class MenuCalibrateMin : public MenuText
 {
 	virtual void doKey(int key);
+public:
+	MenuCalibrateMin(const char * r0, const char * r1);
 };
 
 class MenuCalibrateMax : public MenuText
 {
 	virtual void doKey(int key);
+public:
+	MenuCalibrateMax(const char * r0, const char * r1);
 };
 
 class MenuTime : public Menu
@@ -67,10 +83,15 @@ struct menuList_t
 	int select;
 };
 
-MenuDateTime dateTimeMenu;
+MenuDateTime dateTimeMenu("Simon curt. ctrl");
 
 MenuText upDownMenu("Up / Down", "Full Raise/Lower");
-MenuText timerMenu("Timer", "Set the timer");
+MenuText timerMenu("Timer", "Set up/down tim.");
+MenuText clockMenu("Clock", "Set the timer");
+
+MenuText calibMenu("Calibrate", "curtain");
+MenuCalibrateMin calibMinMenu("Move curtain", "all way up");
+MenuCalibrateMin calibMinMenu("Move curtain", "all way down");
 
 const menuList_t menuList[] = 
 {
@@ -118,9 +139,9 @@ void Menu::doKey(int key)
 	}
 }
 
-Menu::Menu()
+Menu::Menu(const char * r0) :
+	row0(r0)
 {
-
 }
 
 
@@ -197,6 +218,11 @@ void MenuDateTime::doKey(int key)
 	}
 }
 
+MenuDateTime::MenuDateTime(const char * r0) :
+	Menu(r0)
+{
+}
+
 void MenuText::init()
 {
 }
@@ -209,15 +235,15 @@ void MenuText::update()
 	lcd.print(row1);
 }
 
-MenuText::MenuText(const char * r0, const char * r1)
+MenuText::MenuText(const char * r0, const char * r1) :
+	Menu(r0)
 {
-	row0 = r0;
 	row1 = r1;
 }
 
-enum menutimestate_t
+enum menustate_t
 {
-	msview = 0, msedithour, mseditmin
+	msview = 0, msedityear, mseditmonth, mseditday, msedithour, mseditmin, mseditsec
 };
 
 void MenuTime::init()
@@ -252,17 +278,17 @@ void MenuTime::update()
 	}
 }
 
-void keyUpdateVal(int key, int & value, int minValue, int maxValue, int & state, int nextState)
+void keyUpdateVal(int key, long & value, long step, long minValue, long maxValue, int & state, int nextState)
 {
 	switch (key)
 	{
 	case keyUp:
-		value++;
-		if (value > maxValue) value = minValue;
+		value += step;
+		if (value >= maxValue) value -= maxValue - minValue;
 		break;
 	case keyDown:
 		value--;
-		if (value < 0) value = maxValue;
+		if (value < minValue) value += maxValue - minValue;
 		break;
 	case keySelect:
 		state = nextState;
@@ -272,8 +298,6 @@ void keyUpdateVal(int key, int & value, int minValue, int maxValue, int & state,
 
 void MenuTime::doKey(int key)
 {
-	int min = (editVal / 60) % 60;
-	int hour = editVal / 3600;
 	switch (menuState)
 	{
 	case msview:
@@ -287,16 +311,15 @@ void MenuTime::doKey(int key)
 		}
 		break;
 	case msedithour:
-		keyUpdateVal(key, hour, 0, 23, menuState, mseditmin);
+		keyUpdateVal(key, editVal, 3600, 0, 86400, menuState, mseditmin);
 		break;
 	case mseditmin:
-		keyUpdateVal(key, min, 0, 59, menuState, msview);
+		keyUpdateVal(key, editVal, 60, 0, 86400, menuState, msview);
 		if (key == keySelect)
 		{
-			*pTime = (hour * 60 + min) * 60;
+			*pTime = editVal;
 		}
 	}
-	editVal = (hour * 60 + min) * 60;
 }
 
 MenuTime::MenuTime(const char * r0, int * pt)
@@ -310,15 +333,20 @@ void MenuAllUpDown::doKey(int key)
 	switch (key)
 	{
 	case keyUp:
-		stepContr.doStepAbs(-10);
+		stepContr.doStepToMin();
 		break;
 	case keyDown:
-		stepContr.doStepAbs(10);
+		stepContr.doStepToMax();
 		break;
 	default:
 		Menu::doKey(key);
 		break;
 	}
+}
+
+MenuAllUpDown::MenuAllUpDown(const char * r0, const char * r1) :
+	MenuText(r0, r1)
+{
 }
 
 void MenuCalibrateMin::doKey(int key)
@@ -332,13 +360,18 @@ void MenuCalibrateMin::doKey(int key)
 		stepContr.doStep(singleStep);
 		break;
 	case keySelect:
-		stepContr.calibranteMin();
+		stepContr.calibrateMin();
 		Menu::doKey(key);
 		break;
 	default:
 		Menu::doKey(key);
 		break;
 	}
+}
+
+MenuCalibrateMin::MenuCalibrateMin(const char * r0, const char * r1) :
+	MenuText(r0, r1)
+{
 }
 
 void MenuCalibrateMax::doKey(int key)
@@ -352,11 +385,58 @@ void MenuCalibrateMax::doKey(int key)
 		stepContr.doStep(singleStep);
 		break;
 	case keySelect:
-		stepContr.calibranteMax();
+		stepContr.calibrateMax();
 		Menu::doKey(key);
 		break;
 	default:
 		Menu::doKey(key);
 		break;
 	}
+}
+
+MenuCalibrateMax::MenuCalibrateMax(const char * r0, const char * r1) :
+	MenuText(r0, r1)
+{
+}
+
+void MenuDTEditT::init()
+{
+	editVal = 0;
+}
+
+void MenuDTEditT::update()
+{
+	int sec = editVal % 60;
+	int min = (editVal / 60) % 60;
+	int hour = editVal / 3600;
+	lcd.setCursor(0, 0);
+	lcd.print(row0);
+	lcd.setCursor(0, 1);
+	char row1[17];
+	sprintf(row1, "%02i:%02i", hour, min);
+	lcd.print(row1);
+	// Show cursor
+	switch (menuState)
+	{
+	case msview:
+		lcd.noCursor();
+		break;
+	case msedithour:
+		lcd.setCursor(1, 1);
+		lcd.cursor();
+		break;
+	case mseditmin:
+		lcd.setCursor(4, 1);
+		lcd.cursor();
+		break;
+	}
+}
+
+void MenuDTEditT::doKey(int key)
+{
+}
+
+MenuDTEditT::MenuDTEditT(const char * r0) :
+	Menu(r0)
+{
 }

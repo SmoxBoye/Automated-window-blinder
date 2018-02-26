@@ -8,15 +8,15 @@ class Menu
 	static int prevMenu;
 	static int currMenu;
 	
-	
 protected: 
+	const char * row0;
 	static TimeTo timeUpdate;
 	static int menuState;
-	static int editVal;
+	static long editVal;
 	virtual void doKey(int key);
 
 public:
-	Menu();
+	Menu(const char * r0);
 	~Menu();
 	static void doMenu();
 };
