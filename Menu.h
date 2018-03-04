@@ -13,6 +13,8 @@ protected:
 	static TimeTo timeUpdate;
 	static int menuState;
 	static long editVal;
+	static long editVal2;
+	static long editVal3;
 	virtual void doKey(int key);
 
 public:

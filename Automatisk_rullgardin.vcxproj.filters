@@ -36,6 +36,9 @@
     <ClInclude Include="RTClib.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="RTCContr.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="KeyMan.cpp">
@@ -51,6 +54,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="RTClib.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RTCContr.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
