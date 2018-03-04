@@ -2,7 +2,7 @@
 
 
 Stepper stepperM(200, 0, 1, 2, 3);
-TimeTo timeUpdate;
+static TimeTo timeUpdate;
 
 
 bool StepContr::safeQueue(int steps)

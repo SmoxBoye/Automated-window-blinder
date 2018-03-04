@@ -7,7 +7,7 @@ DateTime now;
 
 static TimeTo timeUpdate;
 
-extern StepContr step;
+extern StepContr stepContr;
 
 
 RTCContr::RTCContr()
@@ -26,11 +26,11 @@ void RTCContr::doUpdate()
 	{
 		if (alarmHourUp == getHour() && alarmMinuteUp == getMinute())
 		{
-			step.doStepToMin();
+			stepContr.doStepToMin();
 		}
 		else if (alarmHourDown == getHour() && alarmMinuteDown == getMinute())
 		{
-			step.doStepToMax();
+			stepContr.doStepToMax();
 		}
 	}
 }

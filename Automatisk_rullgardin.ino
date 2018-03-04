@@ -4,6 +4,7 @@
 #include "StepContr.h"
 #include "RTCContr.h"
 #include <LiquidCrystal.h>
+#include "Menu.h"
 
 KeyMan keyMan;
 LiquidCrystal lcd(8, 9, 4, 5, 6, 7);
@@ -22,8 +23,8 @@ void loop()
 {
 	keyMan.updatekey();
 	stepContr.stepperUpdate();
-  
-	
+	rtcContr.doUpdate();
+	Menu::doMenu();
 	
 	/* add main program code here */
 }
