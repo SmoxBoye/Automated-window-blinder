@@ -15,6 +15,7 @@ void setup()
 {
 	lcd.begin(16, 2);
 	lcd.clear();
+	rtcContr.start();
   /* add setup code here */
 
 }

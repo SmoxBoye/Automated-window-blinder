@@ -5,14 +5,9 @@ Stepper stepperM(200, 0, 1, 2, 3);
 static TimeTo timeUpdate;
 
 
-bool StepContr::safeQueue(int steps)
+bool StepContr::safeQueue(long steps)
 {
-	return (calcQueue(steps) >= 0 && calcQueue(steps) <= maxpos);
-}
-
-int StepContr::calcQueue(int steps)
-{
-	return position + steps;
+	return (position + steps >= 0 && position + steps <= maxpos);
 }
 
 void StepContr::varUpdate()
@@ -20,30 +15,36 @@ void StepContr::varUpdate()
 	if (stepQueue > 0) 
 	{ 
 		stepQueue -= 1; 
+		position += 1;
 	}
 	else if (stepQueue < 0) 
 	{
 		stepQueue += 1;
+		position -= 1;
 	}
 }
 
-int speed = 60;
+int stepdir;
 
 void StepContr::direction()
 {
 	if (stepQueue > 0) 
 	{ 
-		stepperM.setSpeed(speed);
+		stepdir = 1;
 	}
 	else if (stepQueue < 0) 
 	{ 
-		stepperM.setSpeed(-speed);
+		stepdir = -1;
 	}
 }
 
+const int speed = 80; // rpm
+const unsigned long interval = 60000000 / (200 * speed);
+
 StepContr::StepContr()
 {
-	timeUpdate.runRepeatMicros(5u);
+	timeUpdate.runRepeatMicros(interval);
+	stepperM.setSpeed(1000u);
 }
 
 StepContr::~StepContr()
@@ -57,16 +58,16 @@ void StepContr::stepperUpdate()
 		if (stepQueue != 0)
 		{
 			direction();
-			stepperM.step(1);
+			stepperM.step(stepdir);
 			varUpdate();
 			
 		}
-		
+			
 		
 	}
 }
 
-void StepContr::doStepSafe(int steps)
+void StepContr::doStepSafe(long steps)
 {
 	if (safeQueue(steps))
 	{
@@ -74,9 +75,9 @@ void StepContr::doStepSafe(int steps)
 	}
 }
 
-void StepContr::doStep(int steps)
+void StepContr::doStep(long steps)
 {
-	stepQueue = calcQueue(steps);
+	stepQueue = steps;
 }
 
 void StepContr::doStepToMax()

@@ -13,6 +13,7 @@ public:
 	RTCContr();
 	~RTCContr();
 
+	void start();
 	void doUpdate();
 	void setTime(int year, int month, int day, int hour, int minute);
 	void setAlarmUp(int hour, int minute);

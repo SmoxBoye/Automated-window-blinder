@@ -53,7 +53,7 @@ void KeyMan::repeatCheck()
 				break;
 			// Waits for select to release to later determine if it was an Escape or a Select.
 			case keySelect:
-				timeRepeat.runOnce(3000u);
+				timeRepeat.runOnce(2000u);
 				state = specSelect;
 				break;
 			}

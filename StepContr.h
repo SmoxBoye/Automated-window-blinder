@@ -4,15 +4,14 @@
 
 class StepContr
 {
-	int position;
-	int maxpos;
-	int stepQueue;
+	long position;
+	long maxpos;
+	long stepQueue;
 	
-	int stepsM;
-	int speed;
+	//int stepsM;
+	//int speed;
 
-	bool safeQueue(int steps);
-	int calcQueue(int steps);
+	bool safeQueue(long steps);
 	void varUpdate();
 	void direction();
 	
@@ -24,8 +23,8 @@ public:
 
 	
 	
-	void doStepSafe(int steps);
-	void doStep(int steps);
+	void doStepSafe(long steps);
+	void doStep(long steps);
 	void doStepToMax();
 	void doStepToMin();
 	void calibrateMax();

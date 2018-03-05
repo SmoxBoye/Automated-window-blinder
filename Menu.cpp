@@ -9,9 +9,9 @@ extern LiquidCrystal lcd;
 extern RTCContr rtcContr;
 extern StepContr stepContr;
 
-const int singleStep = 10;
+const int singleStep = 100;
 
-int Menu::prevMenu = 0;
+int Menu::prevMenu = -1;
 int Menu::currMenu = 0;
 int Menu::menuState = 0;
 long Menu::editVal = 0;
@@ -79,7 +79,6 @@ public:
 
 class MenuTime : public Menu
 {
-	const char* row0;
 	virtual void init();
 	virtual void update();
 	virtual void doKey(int key);
@@ -125,7 +124,7 @@ MenuText clockMenu("Clock", "Set the timer");
 MenuAllUpDown allUppDownMenu("Up / Down", "Select dir");
 
 MenuTimeUp timeUpMenu("Set up time");
-MenuTimeUp timeDownMenu("Set up time");
+MenuTimeDown timeDownMenu("Set down time");
 
 MenuText calibMenu("Calibrate", "curtain");
 MenuCalibrateMin calibMinMenu("Move curtain", "all way up");
@@ -225,6 +224,7 @@ void Menu::doMenu()
 		else
 		{
 			menuList[currMenu].pMenu->doKey(key);
+			menuList[currMenu].pMenu->update();
 		}
 	}
 }
@@ -237,7 +237,7 @@ void MenuDateTime::init()
 void MenuDateTime::update()
 {
 	lcd.setCursor(0,0);
-	lcd.print("TimeDate");
+	lcd.print(row0);
 	lcd.setCursor(0, 1);
 	char row1[17];
 	sprintf(row1, "%04i-%02i-%02i %02i:%02i", rtcContr.getYear(), rtcContr.getMonth(), rtcContr.getDay(), rtcContr.getHour(), rtcContr.getMinute());
@@ -317,7 +317,7 @@ void MenuTime::update()
 	}
 }
 
-void keyUpdateVal(int key, long & value, long step, long minValue, long maxValue, int & state, int nextState)
+void keyUpdateVal(int key, long & value, long step, long minValue, long maxValue, int & state, int nextLeftState, int nextRightState, int nextSelState)
 {
 	switch (key)
 	{
@@ -329,8 +329,14 @@ void keyUpdateVal(int key, long & value, long step, long minValue, long maxValue
 		value--;
 		if (value < minValue) value += maxValue - minValue;
 		break;
+	case keyLeft:
+		state = nextLeftState;
+		break;
+	case keyRight:
+		state = nextRightState;
+		break;
 	case keySelect:
-		state = nextState;
+		state = nextSelState;
 		break;
 	}
 }
@@ -350,10 +356,10 @@ void MenuTime::doKey(int key)
 		}
 		break;
 	case msedithour:
-		keyUpdateVal(key, editVal, 3600, 0, 86400, menuState, mseditmin);
+		keyUpdateVal(key, editVal, 1, 0, 24, menuState, msedithour, mseditmin, mseditmin);
 		break;
 	case mseditmin:
-		keyUpdateVal(key, editVal, 60, 0, 86400, menuState, msview);
+		keyUpdateVal(key, editVal2, 1, 0, 60, menuState, msedithour, mseditmin, msview);
 		if (key == keySelect)
 		{
 			store();
@@ -454,6 +460,7 @@ void MenuRTCEditTime::update()
 	{
 		init();
 	}
+	lcd.setCursor(0, 0); 
 	lcd.print(row0);
 	lcd.setCursor(0, 1);
 	char row1[17];
@@ -491,10 +498,10 @@ void MenuRTCEditTime::doKey(int key)
 		}
 		break;
 	case msedithour:
-		keyUpdateVal(key, editVal, 1, 0, 24, menuState, mseditmin);
+		keyUpdateVal(key, editVal, 1, 0, 24, menuState, msedithour, mseditmin, mseditmin);
 		break;
 	case mseditmin:
-		keyUpdateVal(key, editVal2, 1, 0, 60, menuState, msview);
+		keyUpdateVal(key, editVal2, 1, 0, 60, menuState, msedithour, mseditmin, msview);
 		if (key == keySelect)
 		{
 			rtcContr.setTime(rtcContr.getYear(), rtcContr.getMonth(), rtcContr.getDay(), (int)editVal, (int)editVal2);
@@ -520,6 +527,7 @@ void MenuRTCEditDate::update()
 	{
 		init();
 	}
+	lcd.setCursor(0, 0);
 	lcd.print(row0);
 	lcd.setCursor(0, 1);
 	char row1[17];
@@ -561,13 +569,13 @@ void MenuRTCEditDate::doKey(int key)
 		}
 		break;
 	case msedityear:
-		keyUpdateVal(key, editVal, 1, 2010, 2030, menuState, mseditmonth);
+		keyUpdateVal(key, editVal, 1, 2010, 2030, menuState, msedityear, mseditmonth, mseditmonth);
 		break;
 	case mseditmonth:
-		keyUpdateVal(key, editVal2, 1, 1, 13, menuState, mseditday);
+		keyUpdateVal(key, editVal2, 1, 1, 13, menuState, msedityear, mseditday, mseditday);
 		break;
 	case mseditday:
-		keyUpdateVal(key, editVal3, 1, 1, 32, menuState, mseditday);
+		keyUpdateVal(key, editVal3, 1, 1, 32, menuState, mseditmonth, mseditday, msview);
 		if (key == keySelect)
 		{
 			rtcContr.setTime((int)editVal, (int)editVal2, (int)editVal3, rtcContr.getHour(), rtcContr.getMinute());

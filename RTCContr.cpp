@@ -12,6 +12,7 @@ extern StepContr stepContr;
 
 RTCContr::RTCContr()
 {
+	rtc.begin();
 	timeUpdate.runRepeat(10000u);
 }
 
@@ -20,10 +21,16 @@ RTCContr::~RTCContr()
 {
 }
 
+void RTCContr::start()
+{
+	now = rtc.now();
+}
+
 void RTCContr::doUpdate()
 {
 	if (timeUpdate.timetorun())
 	{
+		now = rtc.now();
 		if (alarmHourUp == getHour() && alarmMinuteUp == getMinute())
 		{
 			stepContr.doStepToMin();
