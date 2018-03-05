@@ -1,5 +1,5 @@
 #include "StepContr.h"
-
+#include <Arduino.h>
 
 Stepper stepperM(200, 0, 1, 2, 3);
 static TimeTo timeUpdate;
