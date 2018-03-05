@@ -31,6 +31,7 @@ public:
 	void calibrateMin();
 	void setUpdateInterval(unsigned long interval);
 	void stop();
+	void release();
 
 };
 

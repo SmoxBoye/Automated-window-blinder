@@ -62,6 +62,10 @@ void StepContr::stepperUpdate()
 			varUpdate();
 			
 		}
+		else 
+		{
+			release();
+		}
 			
 		
 	}
@@ -108,6 +112,14 @@ void StepContr::setUpdateInterval(unsigned long interval)
 void StepContr::stop()
 {
 	stepQueue = 0;
+}
+
+void StepContr::release()
+{
+	digitalWrite(0, LOW);
+	digitalWrite(1, LOW);
+	digitalWrite(2, LOW);
+	digitalWrite(3, LOW);
 }
 
 
